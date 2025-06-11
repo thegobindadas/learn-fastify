@@ -3,7 +3,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors"
 import fastifySensible from "@fastify/sensible";
 import fastifyEnv from "@fastify/env";
-
+import mongoosePlugin from "./plugins/mongoose.mjs";
 
 
 
@@ -41,7 +41,7 @@ fastify.register(fastifyEnv, {
     }
 })
 
-
+fastify.register(mongoosePlugin)
 
 
 
@@ -50,7 +50,28 @@ fastify.get('/', function (request, reply) {
     fastify.log.info("hello")
 })
 
+fastify.get('/test-db', function (request, reply) {
+    try {
+        const mongoose = fastify.mongoose
+        const connectionState = mongoose.connection.readyState
 
+         const statusMap = {
+            0: "disconnected",
+            1: "connected",
+            2: "connecting",
+            3: "disconnecting",
+        };
+
+        const status = statusMap[connectionState] || "unknown";
+
+        reply.send({ database: status });
+
+    } catch (error) {
+        fastify.log.error(err);
+        reply.status(500).send({ message: "Failed to connect to Database" });  
+        process.exit(1);
+    }
+})
 
 
 
