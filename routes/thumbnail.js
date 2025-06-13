@@ -9,7 +9,7 @@ import {
 
 
 
-module.exports = async function (fastify, opts) {
+export default async function (fastify, opts) {
 
   fastify.register(async function (fastify) {
 

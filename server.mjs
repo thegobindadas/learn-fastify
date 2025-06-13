@@ -3,8 +3,12 @@ import Fastify from "fastify";
 import cors from "@fastify/cors"
 import fastifySensible from "@fastify/sensible";
 import fastifyEnv from "@fastify/env";
+import fastifyMultipart from "@fastify/multipart";
+import fastifyStatic from "@fastify/static";
 import mongoosePlugin from "./plugins/mongoose.mjs";
-
+import jwtPlugin from "./plugins/jwt.js"
+import authRoute from "./routes/auth.js";
+import thumbnailRoute from "./routes/thumbnail.js"
 
 
 const fastify = Fastify({
@@ -15,6 +19,11 @@ const fastify = Fastify({
 
 fastify.register(cors)
 fastify.register(fastifySensible)
+fastify.register(fastifyMultipart);
+fastify.register(fastifyStatic, {
+    root: path.join(__dirname, "uploads"),
+    prefix: "/uploads/", // optional: default '/'
+});
 
 fastify.register(fastifyEnv, {
     dotenv: true,
@@ -42,6 +51,11 @@ fastify.register(fastifyEnv, {
 })
 
 fastify.register(mongoosePlugin)
+fastify.register(jwtPlugin);
+
+//register routes
+fastify.register(authRoute, { prefix: "/api/auth" });
+fastify.register(thumbnailRoute, { prefix: "/api/thumbnail" });
 
 
 
